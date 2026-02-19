@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutabaah Ramadan 1447H</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    screens: { 'xs': '400px' }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --text-color: #0f172a;
+            --glass-bg: #ffffff;
+            --input-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        .dark {
+            --bg-color: #020617;
+            --text-color: #ffffff;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --input-bg: #0f172a;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        
+        .glass { 
+            background: var(--glass-bg); 
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(8px);
+        }
+
+        .tab-btn.active { 
+            background: #10b981; 
+            color: white !important; 
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); 
+        }
+
+        .solat-btn.active-jemaah { background-color: #10b981 !important; color: white !important; opacity: 1 !important; }
+        .solat-btn.active-sendiri { background-color: #3b82f6 !important; color: white !important; opacity: 1 !important; }
+        
+        input, textarea, select {
+            background-color: var(--input-bg) !important;
+            color: var(--text-color) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+
+        .dynamic-text {
+            color: var(--text-color) !important;
+        }
+
+        .card-grad {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen dark">
+
+    <!-- Theme Toggle -->
+    <button onclick="toggleTheme()" class="fixed top-4 right-4 z-[110] w-10 h-10 rounded-full glass flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+        <span class="dark:hidden">🌙</span><span class="hidden dark:block">☀️</span>
+    </button>
+
+    <div class="max-w-5xl mx-auto min-h-screen relative shadow-2xl">
+        
+        <!-- Navigation -->
+        <nav class="flex p-2 gap-2 glass sticky top-0 z-[100]">
+            <button onclick="switchTab('amal')" id="tab-amal" class="tab-btn active flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">📝 Rekod</button>
+            <button onclick="switchTab('dash')" id="tab-dash" class="tab-btn flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all opacity-70">📊 Analisis</button>
+            <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all opacity-70">⚙️ Tetapan</button>
+        </nav>
+
+        <main class="p-4 sm:p-8 pb-32">
+            
+            <!-- TAB: REKOD AMAL -->
+            <div id="content-amal" class="space-y-8 animate-in fade-in">
+                <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-emerald-500/20 pb-6">
+                    <div>
+                        <h2 class="text-3xl font-800 tracking-tight dynamic-text">Ramadan 1447H</h2>
+                        <p class="text-xs text-emerald-500 font-bold uppercase tracking-widest">Digital Mutabaah System</p>
+                    </div>
+                    <div class="flex items-center gap-4 bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20">
+                        <div class="text-right">
+                            <p class="text-[9px] opacity-70 font-black uppercase dynamic-text">Mata Terkumpul</p>
+                            <p id="grandTotal" class="text-xl font-900 text-emerald-500">0</p>
+                        </div>
+                        <span class="text-2xl">💎</span>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Kolum Kiri: Tarikh & Solat -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="glass p-5 rounded-3xl">
+                            <label class="text-[10px] font-black opacity-70 uppercase tracking-widest mb-2 block dynamic-text">Tarikh</label>
+                            <input type="date" id="datePicker" class="w-full rounded-xl px-4 py-3 font-bold outline-none">
+                        </div>
+
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-black uppercase tracking-widest flex items-center gap-2 dynamic-text">
+                                <span class="w-2 h-5 bg-emerald-500 rounded-full"></span> Solat Fardhu
+                            </h3>
+                            <div id="solatList" class="space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Kolum Tengah: Sunnah & Custom -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="glass p-6 rounded-3xl">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xs font-black uppercase tracking-widest dynamic-text">✨ Amalan Sunnah & Manual</h3>
+                                <span class="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">Klik untuk Tandakan</span>
+                            </div>
+                            <div id="amalanGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                        </div>
+
+                        <div class="glass p-6 rounded-3xl">
+                            <h3 class="text-xs font-black uppercase tracking-widest mb-4 dynamic-text">📖 Al-Quran & Nota</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <input type="text" id="quranNote" placeholder="Muka Surat (Cth: 1-10)" oninput="updateData()" class="rounded-xl px-4 py-3 text-sm outline-none">
+                                <textarea id="dailyNote" placeholder="Nota Tadabbur / Ringkasan Hari Ini" oninput="updateData()" class="rounded-xl px-4 py-3 text-sm outline-none sm:col-span-1" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: DASHBOARD -->
+            <div id="content-dash" class="hidden space-y-8 animate-in fade-in">
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass p-6 rounded-3xl text-center">
+                        <p class="text-[10px] font-black opacity-60 uppercase dynamic-text">Purata Harian</p>
+                        <p id="stat-avg" class="text-3xl font-900 text-emerald-500">0</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl text-center">
+                        <p class="text-[10px] font-black opacity-60 uppercase dynamic-text">Minggu Ini</p>
+                        <p id="stat-week" class="text-3xl font-900 text-blue-500">0</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl text-center">
+                        <p class="text-[10px] font-black opacity-60 uppercase dynamic-text">Bulan Ini</p>
+                        <p id="stat-month" class="text-3xl font-900 text-purple-500">0</p>
+                    </div>
+                </section>
+
+                <div class="glass p-6 rounded-3xl overflow-x-auto custom-scrollbar">
+                    <h3 class="text-sm font-black uppercase tracking-widest mb-4 dynamic-text">Log Amalan 30 Hari Terakhir</h3>
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="opacity-50 border-b border-emerald-500/10">
+                                <th class="py-3 dynamic-text">Tarikh</th>
+                                <th class="py-3 text-center dynamic-text">Solat (J/S)</th>
+                                <th class="py-3 text-center dynamic-text">Sunnah</th>
+                                <th class="py-3 text-right dynamic-text">Mata 💎</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="downloadCSV()" class="bg-blue-600 px-6 py-3 rounded-xl text-[10px] font-black uppercase text-white tracking-widest flex items-center gap-2 hover:bg-blue-500 transition-colors shadow-lg">
+                        📥 Muat Turun CSV (Excel)
+                    </button>
+                    <button onclick="resetAllData()" class="bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">
+                        ⚠️ Padam Semua Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB: SETTINGS -->
+            <div id="content-settings" class="hidden space-y-8 animate-in fade-in">
+                <div class="glass p-6 rounded-3xl max-w-2xl">
+                    <h3 class="text-sm font-black uppercase tracking-widest mb-6 dynamic-text">➕ Tambah Amalan Manual</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <input type="text" id="customName" placeholder="Nama Amalan (Cth: Puasa Sunat)" class="rounded-xl px-4 py-3 text-sm outline-none">
+                        <input type="number" id="customPoints" placeholder="Mata (Cth: 10)" class="rounded-xl px-4 py-3 text-sm outline-none">
+                    </div>
+                    <button onclick="addCustomAmal()" class="w-full card-grad py-4 rounded-xl text-white font-black uppercase text-xs tracking-widest hover:opacity-90 transition-opacity">
+                        Daftar Amalan Baru
+                    </button>
+
+                    <div class="mt-8 space-y-3">
+                        <p class="text-[10px] font-black opacity-50 uppercase dynamic-text">Senarai Amalan Semasa</p>
+                        <div id="customList" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="mt-20 pt-12 border-t border-emerald-500/20 text-center space-y-8 pb-12">
+                <div class="space-y-2">
+                    <p class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.3em]">Terbitan</p>
+                    <div class="space-y-1">
+                        <p class="text-lg font-800 dynamic-text">Unit Komunikasi Korporat</p>
+                        <p class="text-lg font-800 dynamic-text">PAS Sarawak</p>
+                    </div>
+                </div>
+                
+                <div class="inline-block glass px-8 py-5 rounded-[2rem]">
+                    <p class="text-[9px] font-black opacity-60 uppercase tracking-widest mb-2 dynamic-text">Hubungi Pembangun Perisian</p>
+                    <div class="flex flex-col items-center gap-1">
+                        <a href="https://wa.me/60198877714" target="_blank" class="text-xl font-900 text-emerald-600 dark:text-emerald-400 hover:scale-105 inline-block transition-transform flex items-center gap-2">
+                            <span>60198877714</span>
+                            <span class="text-xs bg-emerald-500 text-white px-2 py-0.5 rounded-full font-bold">WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+            </footer>
+
+        </main>
+
+        <!-- Fixed Save Button -->
+        <div id="footer-save" class="fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
+            <div class="max-w-5xl mx-auto pointer-events-auto">
+                <button onclick="performSave()" class="w-full card-grad py-5 rounded-2xl text-white font-900 shadow-2xl transition-all active:scale-95 text-sm uppercase tracking-[0.2em]">
+                    Simpan Amalan Digital
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SOLATS = ["Subuh", "Zohor", "Asar", "Maghrib", "Isyak"];
+        
+        // Senarai amalan sunnah default (Termasuk Sedekah)
+        const DEFAULT_SUNNAH = [
+            { id: 'tarawih', name: 'Tarawih', pts: 10, icon: '🌙' },
+            { id: 'tahajjud', name: 'Tahajjud', pts: 15, icon: '✨' },
+            { id: 'dhuha', name: 'Dhuha', pts: 10, icon: '☀️' },
+            { id: 'sedekah', name: 'Sedekah', pts: 10, icon: '💰' }, // Tambahan Sedekah
+            { id: 'witir', name: 'Witir', pts: 5, icon: '🌟' },
+            { id: 'zikir', name: 'Zikir Pagi/Petang', pts: 5, icon: '📿' }
+        ];
+
+        let state = {
+            selectedDate: new Date().toLocaleDateString('en-CA'),
+            records: JSON.parse(localStorage.getItem('mutabaah_v4_data')) || {},
+            customAmalan: JSON.parse(localStorage.getItem('mutabaah_v4_custom')) || DEFAULT_SUNNAH
+        };
+
+        function toggleTheme() { 
+            const isDark = document.body.classList.toggle('dark');
+            localStorage.setItem('theme_v4', isDark ? 'dark' : 'light');
+        }
+        
+        if(localStorage.getItem('theme_v4') === 'light') document.body.classList.remove('dark');
+
+        function init() {
+            const dp = document.getElementById('datePicker');
+            dp.value = state.selectedDate;
+            dp.onchange = (e) => { state.selectedDate = e.target.value; render(); };
+            render();
+        }
+
+        function render() {
+            const date = state.selectedDate;
+            if (!state.records[date]) {
+                state.records[date] = { solat: {}, sunnah: [], quran: '', note: '', pts: 0 };
+            }
+            const data = state.records[date];
+
+            // Render Solat
+            document.getElementById('solatList').innerHTML = SOLATS.map(s => {
+                const val = data.solat[s] || 'none';
+                return `
+                <div class="glass p-3 rounded-2xl flex items-center justify-between">
+                    <span class="text-[10px] font-black uppercase dynamic-text">${s}</span>
+                    <div class="flex gap-1">
+                        <button onclick="toggleSolat('${s}', 'jemaah')" class="solat-btn px-3 py-2 rounded-lg border border-emerald-500/10 text-[8px] font-bold uppercase transition-all ${val === 'jemaah' ? 'active-jemaah' : 'opacity-40 dynamic-text'}">Jemaah</button>
+                        <button onclick="toggleSolat('${s}', 'sendiri')" class="solat-btn px-3 py-2 rounded-lg border border-blue-500/10 text-[8px] font-bold uppercase transition-all ${val === 'sendiri' ? 'active-sendiri' : 'opacity-40 dynamic-text'}">Sendiri</button>
+                    </div>
+                </div>`;
+            }).join('');
+
+            // Render Amalan Grid
+            document.getElementById('amalanGrid').innerHTML = state.customAmalan.map(a => {
+                const active = data.sunnah.includes(a.id);
+                return `
+                <button onclick="toggleAmalan('${a.id}')" class="p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 ${active ? 'bg-emerald-500 border-emerald-500 text-white' : 'glass opacity-60 border-transparent dynamic-text'}">
+                    <span class="text-xl">${a.icon || '📌'}</span>
+                    <span class="text-[8px] font-black uppercase text-center">${a.name}</span>
+                    <span class="text-[7px] opacity-80">${a.pts} Pts</span>
+                </button>`;
+            }).join('');
+
+            // Settings List
+            document.getElementById('customList').innerHTML = state.customAmalan.map(a => `
+                <div class="glass p-4 rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-bold dynamic-text">${a.name}</p>
+                        <p class="text-[9px] opacity-60 dynamic-text">${a.pts} Mata</p>
+                    </div>
+                    <button onclick="removeCustom('${a.id}')" class="text-red-500 text-xs font-bold hover:underline">Padam</button>
+                </div>
+            `).join('');
+
+            document.getElementById('quranNote').value = data.quran || '';
+            document.getElementById('dailyNote').value = data.note || '';
+
+            calculatePoints(date);
+            updateDashboard();
+        }
+
+        function toggleSolat(name, value) {
+            const current = state.records[state.selectedDate].solat[name];
+            state.records[state.selectedDate].solat[name] = (current === value) ? 'none' : value;
+            render();
+        }
+
+        function toggleAmalan(id) {
+            const list = state.records[state.selectedDate].sunnah;
+            state.records[state.selectedDate].sunnah = list.includes(id) ? list.filter(x => x !== id) : [...list, id];
+            render();
+        }
+
+        function addCustomAmal() {
+            const name = document.getElementById('customName').value;
+            const pts = parseInt(document.getElementById('customPoints').value);
+            if (!name || isNaN(pts)) return;
+            state.customAmalan.push({ id: 'c_' + Date.now(), name, pts, icon: '📌' });
+            localStorage.setItem('mutabaah_v4_custom', JSON.stringify(state.customAmalan));
+            document.getElementById('customName').value = '';
+            document.getElementById('customPoints').value = '';
+            render();
+        }
+
+        function removeCustom(id) {
+            state.customAmalan = state.customAmalan.filter(a => a.id !== id);
+            localStorage.setItem('mutabaah_v4_custom', JSON.stringify(state.customAmalan));
+            render();
+        }
+
+        function calculatePoints(date) {
+            const d = state.records[date];
+            let pts = 0;
+            SOLATS.forEach(s => {
+                if (d.solat[s] === 'jemaah') pts += 27;
+                else if (d.solat[s] === 'sendiri') pts += 1;
+            });
+            d.sunnah.forEach(sid => {
+                const found = state.customAmalan.find(a => a.id === sid);
+                if (found) pts += found.pts;
+            });
+            if (d.quran.trim()) pts += 10;
+            if (d.note.trim()) pts += 5;
+            d.pts = pts;
+            save();
+        }
+
+        function updateData() {
+            const d = state.records[state.selectedDate];
+            d.quran = document.getElementById('quranNote').value;
+            d.note = document.getElementById('dailyNote').value;
+            calculatePoints(state.selectedDate);
+        }
+
+        function save() {
+            localStorage.setItem('mutabaah_v4_data', JSON.stringify(state.records));
+            const total = Object.values(state.records).reduce((sum, r) => sum + (r.pts || 0), 0);
+            document.getElementById('grandTotal').innerText = total.toLocaleString();
+        }
+
+        function updateDashboard() {
+            const dates = Object.keys(state.records).sort().reverse();
+            const now = new Date();
+            let monthTotal = 0, weekTotal = 0;
+
+            const tbody = document.getElementById('dashTableBody');
+            tbody.innerHTML = dates.slice(0, 30).map(d => {
+                const r = state.records[d];
+                const dt = new Date(d);
+                
+                if (dt.getMonth() === now.getMonth()) monthTotal += r.pts;
+                const diff = (now - dt) / (1000 * 60 * 60 * 24);
+                if (diff <= 7) weekTotal += r.pts;
+
+                const sj = Object.values(r.solat).filter(v => v === 'jemaah').length;
+                const ss = Object.values(r.solat).filter(v => v === 'sendiri').length;
+
+                return `
+                <tr class="border-b border-emerald-500/5 hover:bg-emerald-500/5">
+                    <td class="py-4 font-bold opacity-80 dynamic-text">${d}</td>
+                    <td class="py-4 text-center">
+                        <span class="text-emerald-500 font-bold">${sj}J</span> / <span class="text-blue-500 font-bold">${ss}S</span>
+                    </td>
+                    <td class="py-4 text-center opacity-60 dynamic-text">${r.sunnah.length}</td>
+                    <td class="py-4 text-right font-black text-emerald-500">${r.pts}</td>
+                </tr>`;
+            }).join('');
+
+            const allPoints = Object.values(state.records).map(r => r.pts).filter(p => p > 0);
+            const avg = allPoints.length ? Math.round(allPoints.reduce((a,b)=>a+b,0) / allPoints.length) : 0;
+            
+            document.getElementById('stat-avg').innerText = avg;
+            document.getElementById('stat-week').innerText = weekTotal;
+            document.getElementById('stat-month').innerText = monthTotal;
+        }
+
+        function downloadCSV() {
+            let csv = "Tarikh,Subuh,Zohor,Asar,Maghrib,Isyak,Sunnah_Count,Mata_Ganjaran\n";
+            Object.keys(state.records).sort().forEach(d => {
+                const r = state.records[d];
+                csv += `${d},${r.solat.Subuh || '-'},${r.solat.Zohor || '-'},${r.solat.Asar || '-'},${r.solat.Maghrib || '-'},${r.solat.Isyak || '-'},${r.sunnah.length},${r.pts}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mutabaah_ramadan_export.csv`;
+            a.click();
+        }
+
+        function switchTab(t) {
+            ['amal', 'dash', 'settings'].forEach(id => {
+                document.getElementById('content-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id).classList.remove('active');
+                document.getElementById('tab-' + id).classList.add('opacity-70');
+            });
+            document.getElementById('content-' + t).classList.remove('hidden');
+            document.getElementById('tab-' + t).classList.add('active');
+            document.getElementById('tab-' + t).classList.remove('opacity-70');
+            document.getElementById('footer-save').classList.toggle('hidden', t !== 'amal');
+        }
+
+        function performSave() {
+            const b = document.querySelector('#footer-save button');
+            const original = b.innerText;
+            b.innerText = "AMALAN BERJAYA DISIMPAN! ✨";
+            setTimeout(() => b.innerText = original, 2000);
+        }
+
+        function resetAllData() {
+            if(confirm("Adakah anda pasti mahu memadam SEMUA rekod?")) {
+                state.records = {};
+                save();
+                render();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
