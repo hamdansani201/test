@@ -76,6 +76,10 @@
 </head>
 <body class="min-h-screen dark">
 
+    <button id="btnInstall" style="display:none; background-color: #007bff; margin-top: 10px;">
+    📲 Pasang Aplikasi Kedai
+</button>
+
     <!-- Theme Toggle -->
     <button onclick="toggleTheme()" class="fixed top-4 right-4 z-[110] w-10 h-10 rounded-full glass flex items-center justify-center shadow-lg active:scale-90 transition-transform">
         <span class="dark:hidden">🌙</span><span class="hidden dark:block">☀️</span>
@@ -235,6 +239,8 @@
                 <button onclick="performSave()" class="w-full card-grad py-5 rounded-2xl text-white font-900 shadow-2xl transition-all active:scale-95 text-sm uppercase tracking-[0.2em]">
                     Simpan Amalan Digital
                 </button>
+
+                
             </div>
         </div>
     </div>
@@ -458,7 +464,44 @@
         }
 
         init();
+
+let deferredPrompt;
+const btnInstall = document.getElementById('btnInstall');
+
+// 1. Kesan jika browser sedia untuk 'install'
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Halang browser dari tunjuk prompt asal secara automatik
+    e.preventDefault();
+    // Simpan event ini supaya boleh dipanggil kemudian
+    deferredPrompt = e;
+    // Tunjukkan butang install kita yang disorok tadi
+    btnInstall.style.display = 'block';
+});
+
+// 2. Apa jadi bila butang diklik
+btnInstall.addEventListener('click', (e) => {
+    // Sembunyikan butang semula
+    btnInstall.style.display = 'none';
+    // Tunjukkan prompt install
+    deferredPrompt.prompt();
+    // Tunggu jawapan pengguna (Setuju atau Tak)
+    deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('User setuju install');
+        }
+        deferredPrompt = null;
+    });
+});
+
+// 3. Daftarkan "Service Worker" (Wajib untuk PWA)
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+    .then(() => console.log("Service Worker Berjaya Didaftar"));
+}
+
+        
     </script>
 </body>
 </html>
+
 
