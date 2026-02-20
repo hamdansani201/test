@@ -4,36 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Semakan Amalan Ramadan 1447H</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#10b981">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    screens: { 'xs': '400px' }
-                }
-            }
-        }
-    </script>
     <style>
-        :root {
-            --bg-color: #f1f5f9;
-            --text-color: #0f172a;
-            --glass-bg: #ffffff;
-            --input-bg: #ffffff;
-            --border-color: #e2e8f0;
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #ffffff; }
+        .glass { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); }
+        .card-grad { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        input[type="checkbox"] { width: 22px; height: 22px; accent-color: #10b981; cursor: pointer; }
+        .page-node { display: none; }
+        .active { display: block; }
+    </style>
+</head>
+<body class="min-h-screen p-4 flex justify-center pb-20">
+
+    <div class="w-full max-w-md space-y-6">
+        
+        <header class="text-center py-4">
+            <h1 class="text-3xl font-800 text-emerald-500">Ramadan 1447H</h1>
+            <p class="text-[10px] opacity-60 tracking-[0.3em] uppercase">Digital Mutabaah System</p>
+        </header>
+
+        <div class="glass p-5 rounded-[2rem] flex justify-between items-center border-emerald-500/20 shadow-xl">
+            <div>
+                <p class="text-[10px] opacity-50 uppercase font-black tracking-widest">👤 Pengguna</p>
+                <p id="displayUserName" class="text-blue-400 font-800 text-xl">Memuatkan...</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] opacity-50 uppercase font-black tracking-widest">💎 Mata</p>
+                <p id="grandTotal" class="text-yellow-400 font-900 text-3xl">0</p>
+            </div>
+        </div>
+
+        <div class="glass p-5 rounded-[2rem] border-white/5">
+            <label class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-3 block">📅 Pilih Tarikh Amalan</label>
+            <input type="date" id="datePicker" onchange="changeDate()" class="w-full bg-slate-900/50 border border-white/10 rounded-2xl p-4 font-bold outline-none text-white focus:border-emerald-500 transition-all">
+        </div>
+
+        <section class="space-y-4">
+            <h3 class="text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-3 text-emerald-500">
+                <span class="w-2 h-5 card-grad rounded-full"></span> Solat Fardhu
+            </h3>
+            <div id="solatContainer" class="grid grid-cols-1 gap-3">
+                </div>
+        </section>
+
+        <section class="space-y-4 pt-2">
+            <h3 class="text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-3 text-blue-400">
+                <span class="w-2 h-5 bg-blue-500 rounded-full"></span> Amalan Sunat
+            </h3>
+            <div id="sunnahContainer" class="grid grid-cols-2 gap-3">
+                </div>
+        </section>
+
+        <div class="pt-6">
+            <button onclick="performSave()" class="w-full card-grad py-5 rounded-[2rem] text-white font-900 shadow-2xl transition-all active:scale-95 uppercase tracking-[0.2em] text-sm">
+                Simpan Amalan Digital
+            </button>
+            <center class="mt-8">
+                <button onclick="logout()" class="text-white/30 text-[9px] font-bold uppercase tracking-[0.2em] hover:text-red-400 transition-colors">
+                    Log Keluar / Tukar Nama
+                </button>
+            </center>
+        </div>
+
+    </div>
+
+    <script>
+        const SOLATS = ["Subuh", "Zohor", "Asar", "Maghrib", "Isyak"];
+        const SUNNAHS = [
+            { id: 'tarawih', name: 'Tarawih', pts: 20 },
+            { id: 'tadarus', name: 'Tadarus', pts: 15 },
+            { id: 'sedekah', name: 'Sedekah', pts: 10 },
+            { id: 'dhuha', name: 'Dhuha', pts: 10 }
+        ];
+
+        let state = {
+            user: localStorage.getItem('ramadan_user') || 'Hamba Allah',
+            selectedDate: new Date().toLocaleDateString('en-CA'),
+            records: JSON.parse(localStorage.getItem('ramadan_data')) || {}
+        };
+
+        function init() {
+            // Check if user exists, if not prompt
+            if(!localStorage.getItem('ramadan_user')) {
+                const name = prompt("Masukkan Nama Anda:");
+                state.user = name || 'Hamba Allah';
+                localStorage.setItem('ramadan_user', state.user);
+            }
+            
+            document.getElementById('displayUserName').innerText = state.user;
+            document.getElementById('datePicker').value = state.selectedDate;
+            
+            renderAmalan();
+            updateTotalMata();
         }
 
-        .dark {
-            --bg-color: #020617;
-            --text-color: #ffffff;
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --input-bg: #0f172a;
-            --border-color: rgba(255, 255, 255, 0.1);
+        function renderAmalan() {
+            const date = state.selectedDate;
+            if (!state.records[date]) {
+                state.records[date] = { solat: [], sunnah: [], pts: 0 };
+            }
+            const data = state.records[date];
+
+            // Render Solat
+            document.getElementById('solatContainer').innerHTML = SOLATS.map(s => `
+                <label class="glass p-4 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-white/5 transition-all">
+                    <span class="font-bold text-sm tracking-wide">${s}</span>
+                    <input type="checkbox" ${data.solat.includes(s) ? 'checked' : ''} 
+                        onchange="toggleSolat('${s}')">
+                </label>
+            `).join('');
+
+            // Render Sunnah
+            document.getElementById('sunnahContainer').innerHTML = SUNNAHS.map(s => `
+                <label class="glass p-4 rounded-2xl flex flex-col gap-3 cursor-pointer hover:bg-white/5 transition-all">
+                    <input type="checkbox" ${data.sunnah.includes(s.id) ? 'checked' : ''} 
+                        onchange="toggleSunnah('${s.id}')">
+                    <span class="font-bold text-xs tracking-widest uppercase">${s.name}</span>
+                </label>
+            `).join('');
+        }
+
+        function toggleSolat(name) {
+            const list = state.records[state.selectedDate].solat;
+            state.records[state.selectedDate].solat = list.includes(name) ? 
+                list.filter(item => item !== name) : [...list, name];
+            calculateDailyPoints();
+        }
+
+        function toggleSunnah(id) {
+            const list = state.records[state.selectedDate].sunnah;
+            state.records[state.selectedDate].sunnah = list.includes(id) ? 
+                list.filter(item => item !== id) : [...list, id];
+            calculateDailyPoints();
+        }
+
+        function calculateDailyPoints() {
+            const d = state.records[state.selectedDate];
+            let pts = d.solat.length * 10; // 1 solat = 10 mata
+            d.sunnah.forEach(sid => {
+                const found = SUNNAHS.find(s => s.id === sid);
+                if(found) pts += found.pts;
+            });
+            d.pts = pts;
+            save();
+        }
+
+        function save() {
+            localStorage.setItem('ramadan_data', JSON.stringify(state.records));
+            updateTotalMata();
+        }
+
+        function updateTotalMata() {
+            const total = Object.values(state.records).reduce((sum, r) => sum + (r.pts || 0), 0);
+            document.getElementById('grandTotal').innerText = total.toLocaleString();
+        }
+
+        function changeDate() {
+            state.selectedDate = document.getElementById('datePicker').value;
+            renderAmalan();
+        }
+
+        function performSave() {
+            save();
+            alert("Amalan tarikh " + state.selectedDate + " telah disimpan!");
+        }
+
+        function logout() {
+            if(confirm("Tukar nama pengguna? Data amalan tidak akan hilang.")) {
+                localStorage.removeItem('ramadan_user');
+                location.reload();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
         }
 
         body { 
@@ -393,3 +540,4 @@
     </script>
 </body>
 </html>
+
