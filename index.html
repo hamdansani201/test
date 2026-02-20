@@ -6,146 +6,256 @@
     <title>Digital Mutabaah System</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --primary: #2ecc71; --blue: #3498db; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; }
-        
-        /* Skrin Management */
-        #page-1, #page-2, #page-3 { display: none; width: 100%; animation: fadeIn 0.5s; }
-        .active { display: block !important; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        :root {
+            --bg: #050a10;
+            --card: #111827;
+            --primary: #2ecc71;
+            --secondary: #3498db;
+            --text: #ffffff;
+            --text-dim: #94a3b8;
+        }
 
-        /* UI Elements */
-        .card { background: var(--card); border: 1px solid #30363d; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; transition: 0.3s; }
-        input[type="text"], input[type="date"] { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; margin-bottom: 15px; }
-        
-        /* Mutabaah Specific */
-        .grid-solat { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-bottom: 20px; }
-        .checkbox-item { background: #0d1117; padding: 10px; border-radius: 8px; border: 1px solid #30363d; display: flex; align-items: center; }
-        .checkbox-item input { margin-right: 10px; transform: scale(1.2); }
-        .stats { background: #0d1117; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container { width: 100%; max-width: 480px; padding: 15px; box-sizing: border-box; }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: none;
+            color: var(--text-dim);
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Card & UI */
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Form Elements */
+        input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #1f2937;
+            background: #050a10;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .grid-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .check-item {
+            background: #1f2937;
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .check-item input { margin-right: 10px; accent-color: var(--primary); }
+
+        .btn-main {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        /* Sections Visibility */
+        #page-install, #page-login, #app-content { display: none; width: 100%; }
+        .visible { display: block !important; }
+
+        .header-title { text-align: left; margin-bottom: 20px; }
+        .header-title h1 { margin: 0; font-size: 24px; color: var(--primary); }
+        .header-title p { margin: 0; opacity: 0.6; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <div class="container">
         
-        <div id="page-1" class="card">
-            <h1 style="color: var(--blue);">📲 Langkah 1</h1>
-            <p>Pasang aplikasi ke telefon anda untuk hilangkan bar alamat browser dan nampak lebih kemas.</p>
-            <button id="btnInstall" style="background: var(--blue); color: white;">PASANG APLIKASI</button>
-            <button onclick="tukarSkrin('page-2')" style="background: none; color: var(--text); font-size: 14px; text-decoration: underline;">Nanti dulu, teruskan ke Daftar</button>
+        <div id="page-install" class="card" style="text-align: center;">
+            <div style="font-size: 50px;">📲</div>
+            <h2>Pasang Aplikasi</h2>
+            <p style="color: var(--text-dim);">Pasang aplikasi ke skrin utama untuk pengalaman skrin penuh tanpa bar URL.</p>
+            <button class="btn-main" id="btnInstall" style="background: var(--secondary);">PASANG SEKARANG</button>
+            <p onclick="showLogin()" style="cursor:pointer; text-decoration: underline; margin-top: 15px; font-size: 13px;">Langkau & Terus Daftar</p>
         </div>
 
-        <div id="page-2" class="card">
-            <h1 style="color: var(--primary);">📝 Langkah 2</h1>
-            <p>Masukkan nama anda untuk mula merekod Mutabaah Ramadan 1447H.</p>
+        <div id="page-login" class="card">
+            <h2>Daftar Masuk</h2>
+            <p style="color: var(--text-dim); font-size: 14px;">Sila masukkan nama untuk mula merekod amalan.</p>
             <input type="text" id="input-nama" placeholder="Contoh: Hamdan Sani">
-            <button onclick="prosesDaftar()" style="background: var(--primary); color: white;">MULA REKOD AMALAN</button>
+            <button class="btn-main" onclick="saveLogin()">Masuk Aplikasi</button>
         </div>
 
-        <div id="page-3">
+        <div id="app-content">
+            <div class="header-title">
+                <h1>Ramadan 1447H</h1>
+                <p>DIGITAL MUTABAAH SYSTEM</p>
+            </div>
+
+            <div class="nav-tabs">
+                <button class="tab-btn active">📝 REKOD</button>
+                <button class="tab-btn">📊 ANALISIS</button>
+                <button class="tab-btn" onclick="logout()">⚙️ TETAPAN</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span style="font-size: 11px; color: var(--text-dim);">PENGGUNA</span><br>
+                    <strong id="user-display" style="color: var(--secondary);"></strong>
+                </div>
+                <div class="stat-box">
+                    <span style="font-size: 11px; color: var(--text-dim);">MATA TERKUMPUL</span><br>
+                    <strong style="color: #f1c40f;">💎 150</strong>
+                </div>
+            </div>
+
             <div class="card">
-                <h2 style="margin:0; color: var(--primary);">Ramadan 1447H</h2>
-                <p style="margin: 5px 0 20px 0; font-size: 14px; opacity: 0.7;">Digital Mutabaah System</p>
-                
-                <div class="stats">
-                    <div>
-                        <span style="font-size: 12px; opacity: 0.7;">👤 Pengguna</span><br>
-                        <strong id="papar-nama" style="color: var(--blue);"></strong>
-                    </div>
-                    <div style="text-align: right;">
-                        <span style="font-size: 12px; opacity: 0.7;">💎 Mata</span><br>
-                        <strong style="color: #f1c40f;">150</strong>
-                    </div>
+                <label style="font-size: 12px; color: var(--text-dim);">TARIKH:</label>
+                <input type="date" id="date-picker">
+
+                <h4 style="margin: 10px 0; font-size: 14px; color: var(--primary); border-left: 3px solid var(--primary); padding-left: 8px;">SOLAT FARDHU</h4>
+                <div class="grid-options">
+                    <div class="check-item"><input type="checkbox"> Subuh</div>
+                    <div class="check-item"><input type="checkbox"> Zuhur</div>
+                    <div class="check-item"><input type="checkbox"> Asar</div>
+                    <div class="check-item"><input type="checkbox"> Maghrib</div>
+                    <div class="check-item"><input type="checkbox"> Isyak</div>
                 </div>
 
-                <div style="text-align: left;">
-                    <label style="font-size: 14px;">📅 Pilih Tarikh:</label>
-                    <input type="date" id="tarikh-amalan">
-
-                    <h4 style="border-left: 4px solid var(--primary); padding-left: 10px; margin: 20px 0 10px 0;">SOLAT FARDHU</h4>
-                    <div class="grid-solat">
-                        <div class="checkbox-item"><input type="checkbox"> Subuh</div>
-                        <div class="checkbox-item"><input type="checkbox"> Zuhur</div>
-                        <div class="checkbox-item"><input type="checkbox"> Asar</div>
-                        <div class="checkbox-item"><input type="checkbox"> Maghrib</div>
-                        <div class="checkbox-item"><input type="checkbox"> Isyak</div>
-                    </div>
-
-                    <h4 style="border-left: 4px solid var(--blue); padding-left: 10px; margin: 20px 0 10px 0;">AMALAN SUNAT</h4>
-                    <div class="grid-solat">
-                        <div class="checkbox-item"><input type="checkbox"> Tarawih</div>
-                        <div class="checkbox-item"><input type="checkbox"> Tadarus</div>
-                        <div class="checkbox-item"><input type="checkbox"> Sedekah</div>
-                        <div class="checkbox-item"><input type="checkbox"> Dhuha</div>
-                    </div>
+                <h4 style="margin: 10px 0; font-size: 14px; color: var(--secondary); border-left: 3px solid var(--secondary); padding-left: 8px;">AMALAN SUNAT</h4>
+                <div class="grid-options">
+                    <div class="check-item"><input type="checkbox"> Tarawih</div>
+                    <div class="check-item"><input type="checkbox"> Tadarus</div>
+                    <div class="check-item"><input type="checkbox"> Sedekah</div>
+                    <div class="check-item"><input type="checkbox"> Dhuha</div>
                 </div>
 
-                <button style="background: var(--primary); color: white; margin-top: 20px;" onclick="alert('Rekod Berjaya Disimpan!')">SIMPAN AMALAN</button>
-                
-                <button onclick="logKeluar()" style="background:none; color: #f85149; font-size: 12px; margin-top: 20px;">Log Keluar / Tukar Nama</button>
+                <button class="btn-main" onclick="saveAmalan()">SIMPAN AMALAN DIGITAL</button>
             </div>
         </div>
 
     </div>
 
     <script>
-        // --- LOGIK NAVIGASI ---
-        function tukarSkrin(pageId) {
-            document.getElementById('page-1').classList.remove('active');
-            document.getElementById('page-2').classList.remove('active');
-            document.getElementById('page-3').classList.remove('active');
-            document.getElementById(pageId).classList.add('active');
+        // Logik Paparan
+        function showInstall() { hideAll(); document.getElementById('page-install').classList.add('visible'); }
+        function showLogin() { hideAll(); document.getElementById('page-login').classList.add('visible'); }
+        function showApp(nama) { 
+            hideAll(); 
+            document.getElementById('app-content').classList.add('visible'); 
+            document.getElementById('user-display').innerText = nama;
+            document.getElementById('date-picker').valueAsDate = new Date();
+        }
+        function hideAll() {
+            document.getElementById('page-install').classList.remove('visible');
+            document.getElementById('page-login').classList.remove('visible');
+            document.getElementById('app-content').classList.remove('visible');
         }
 
-        // --- LOGIK DAFTAR ---
-        function prosesDaftar() {
+        // Logik User
+        function saveLogin() {
             const nama = document.getElementById('input-nama').value;
-            if (nama === "") { alert("Sila masukkan nama!"); return; }
-            localStorage.setItem('user_nama', nama);
-            bukaAplikasi(nama);
+            if(!nama) return alert("Sila masukkan nama!");
+            localStorage.setItem('mutabaah_user', nama);
+            showApp(nama);
         }
 
-        function bukaAplikasi(nama) {
-            document.getElementById('papar-nama').innerText = nama;
-            tukarSkrin('page-3');
-            // Set tarikh harini automatik
-            document.getElementById('tarikh-amalan').valueAsDate = new Date();
-        }
-
-        function logKeluar() {
-            if(confirm("Adakah anda mahu log keluar?")) {
-                localStorage.removeItem('user_nama');
+        function logout() {
+            if(confirm("Log keluar? Data sesi akan dipadam.")) {
+                localStorage.removeItem('mutabaah_user');
                 location.reload();
             }
         }
 
-        // --- LOGIK PWA (INSTALL) ---
+        function saveAmalan() {
+            alert("Amalan berjaya direkodkan!");
+        }
+
+        // Logik PWA
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            tukarSkrin('page-1');
+            if(!localStorage.getItem('mutabaah_user')) showInstall();
         });
 
-        document.getElementById('btnInstall').addEventListener('click', (e) => {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') { tukarSkrin('page-2'); }
-                deferredPrompt = null;
-            });
-        });
-
-        // --- CHECK STATUS ON LOAD ---
-        window.onload = function() {
-            const namaLama = localStorage.getItem('user_nama');
-            if (namaLama) {
-                bukaAplikasi(namaLama);
-            } else {
-                tukarSkrin('page-2'); // Terus ke daftar jika PWA tak dpt dikesan
+        document.getElementById('btnInstall').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') showLogin();
             }
+        });
+
+        // Check Sesi
+        window.onload = () => {
+            const user = localStorage.getItem('mutabaah_user');
+            if(user) showApp(user);
+            else showLogin();
         };
 
         if ('serviceWorker' in navigator) {
