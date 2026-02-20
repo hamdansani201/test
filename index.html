@@ -49,6 +49,11 @@ window.onload = function() {
         }
     </script>
     <style>
+
+        #skrin-utama {
+    display: none;
+}
+        
         :root {
             --bg-color: #f1f5f9;
             --text-color: #0f172a;
@@ -107,6 +112,12 @@ window.onload = function() {
 </head>
 <body class="min-h-screen dark">
 
+<div id="pwa-area" style="text-align:center; margin-bottom: 20px;">
+    <button id="btnInstall" style="display:none; background: #3498db; color: white; border: none; padding: 10px; border-radius: 5px;">
+        📲 Pasang Aplikasi Terlebih Dahulu
+    </button>
+</div>
+    
     <div id="skrin-daftar" style="text-align: center; padding: 50px;">
     <h2>Daftar Masuk Kedai</h2>
     <input type="text" id="input-nama" placeholder="Masukkan Nama Anda" style="padding: 10px; width: 80%;"><br><br>
@@ -550,8 +561,41 @@ if ('serviceWorker' in navigator) {
 
         
     </script>
+
+    function prosesDaftar() {
+    const nama = document.getElementById('input-nama').value;
+
+    if (nama === "") {
+        alert("Sila masukkan nama anda untuk mendaftar.");
+        return;
+    }
+
+    // Simpan nama
+    localStorage.setItem('user_nama', nama);
+
+    // TUKAR SKRIN: Sembunyi daftar, tunjuk utama
+    document.getElementById('skrin-daftar').style.display = 'none';
+    document.getElementById('skrin-utama').style.display = 'block';
+    
+    // Refresh paparan nama
+    document.getElementById('nama-pembeli').innerText = nama;
+}
+
+// Logik Automatik bila buka App
+window.onload = function() {
+    const sudahDaftar = localStorage.getItem('user_nama');
+    
+    // Jika sudah ada nama dalam memori, terus buka skrin utama
+    if (sudahDaftar) {
+        document.getElementById('skrin-daftar').style.display = 'none';
+        document.getElementById('skrin-utama').style.display = 'block';
+        document.getElementById('nama-pembeli').innerText = sudahDaftar;
+    }
+};
+    
 </body>
 </html>
+
 
 
 
