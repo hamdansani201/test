@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mutabaah Ramadan 1447H</title>
+    <title>Semakan Amalan Ramadan 1447H</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#10b981">
     
@@ -70,7 +70,6 @@
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
 
-        /* Skrin Logic Style */
         .page-node { display: none; }
         .page-node.active { display: block; }
     </style>
@@ -85,7 +84,7 @@
         <div class="glass p-8 rounded-[2.5rem] max-w-sm w-full text-center space-y-6 shadow-2xl">
             <div class="text-6xl">📲</div>
             <h1 class="text-2xl font-800 tracking-tight dynamic-text">Pasang Aplikasi</h1>
-            <p class="text-sm opacity-70 dynamic-text">Sila pasang aplikasi ke skrin utama anda untuk akses pantas dan paparan skrin penuh.</p>
+            <p class="text-sm opacity-70 dynamic-text">Sila pasang aplikasi ke skrin utama anda untuk akses pantas Semakan Amalan Ramadan.</p>
             <button id="btnInstallPWA" class="w-full card-grad py-4 rounded-2xl text-white font-black uppercase tracking-widest shadow-lg">Pasang Sekarang</button>
             <button onclick="navTo('page-login')" class="text-xs font-bold text-emerald-500 uppercase tracking-widest hover:underline">Langkau ke Pendaftaran</button>
         </div>
@@ -95,7 +94,7 @@
         <div class="glass p-8 rounded-[2.5rem] max-w-sm w-full text-center space-y-6 shadow-2xl">
             <div class="text-4xl text-emerald-500 font-black">📝</div>
             <h1 class="text-2xl font-800 tracking-tight dynamic-text">Pendaftaran</h1>
-            <p class="text-sm opacity-70 dynamic-text">Masukkan nama anda untuk mula merekod amalan Ramadan.</p>
+            <p class="text-sm opacity-70 dynamic-text">Masukkan nama anda untuk mula merekod Semakan Amalan Ramadan.</p>
             <input type="text" id="userNameInput" placeholder="Nama anda..." class="w-full rounded-xl px-4 py-4 font-bold outline-none text-center">
             <button onclick="saveUserAndStart()" class="w-full card-grad py-4 rounded-2xl text-white font-black uppercase tracking-widest shadow-lg">Mula Beramal</button>
         </div>
@@ -151,7 +150,7 @@
                             <h3 class="text-xs font-black uppercase tracking-widest mb-4 dynamic-text">📖 Al-Quran & Nota</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <input type="text" id="quranNote" placeholder="Muka Surat (Cth: 1-10)" oninput="updateData()" class="rounded-xl px-4 py-3 text-sm outline-none">
-                                <textarea id="dailyNote" placeholder="Nota Tadabbur" oninput="updateData()" class="rounded-xl px-4 py-3 text-sm outline-none" rows="2"></textarea>
+                                <textarea id="dailyNote" placeholder="Nota Tadabbur / Ringkasan Hari Ini" oninput="updateData()" class="rounded-xl px-4 py-3 text-sm outline-none" rows="2"></textarea>
                             </div>
                         </div>
                     </div>
@@ -174,6 +173,7 @@
                     </div>
                 </section>
                 <div class="glass p-6 rounded-3xl overflow-x-auto">
+                    <h3 class="text-sm font-black uppercase tracking-widest mb-4 dynamic-text">Log Semakan 30 Hari Terakhir</h3>
                     <table class="w-full text-left text-xs">
                         <thead>
                             <tr class="opacity-50 border-b border-emerald-500/10">
@@ -215,7 +215,7 @@
     </div>
 
     <script>
-        // LOGIK SKRIN (INSTALL -> LOGIN -> APP)
+        // LOGIK SKRIN
         function navTo(id) {
             document.querySelectorAll('.page-node').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -230,13 +230,13 @@
         }
 
         function logoutUser() {
-            if(confirm("Log keluar? Data rekod tetap disimpan.")) {
+            if(confirm("Log keluar? Rekod anda tetap disimpan dalam telefon ini.")) {
                 localStorage.removeItem('mutabaah_v4_user');
                 location.reload();
             }
         }
 
-        // --- KOD ASAL MUTABAAH ANDA ---
+        // --- KOD LOGIK AMALAN ---
         const SOLATS = ["Subuh", "Zohor", "Asar", "Maghrib", "Isyak"];
         const DEFAULT_SUNNAH = [
             { id: 'tarawih', name: 'Tarawih', pts: 10, icon: '🌙' },
@@ -259,13 +259,13 @@
         }
 
         function init() {
-            // Check User Session
             const savedUser = localStorage.getItem('mutabaah_v4_user');
             if(savedUser) {
                 document.getElementById('displayUserName').innerText = savedUser;
                 navTo('page-app');
             } else {
-                navTo('page-login');
+                // Tunjuk page install dulu jika belum pernah daftar
+                navTo('page-install');
             }
 
             const dp = document.getElementById('datePicker');
@@ -342,7 +342,7 @@
         function performSave() {
             const b = document.querySelector('#footer-save button');
             const original = b.innerText;
-            b.innerText = "BERJAYA DISIMPAN! ✨";
+            b.innerText = "REKOD BERJAYA DISIMPAN! ✨";
             setTimeout(() => b.innerText = original, 2000);
         }
 
@@ -365,7 +365,7 @@
             document.getElementById('footer-save').classList.toggle('hidden', t !== 'amal');
         }
 
-        // LOGIK PWA PROMPT
+        // PWA PROMPT
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -380,6 +380,8 @@
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') navTo('page-login');
                 deferredPrompt = null;
+            } else {
+                navTo('page-login');
             }
         });
 
