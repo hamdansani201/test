@@ -3,264 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Mutabaah System</title>
+    <title>Mutabaah Ramadan 1447H</title>
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    screens: { 'xs': '400px' }
+                }
+            }
+        }
+    </script>
     <style>
         :root {
-            --bg: #050a10;
-            --card: #111827;
-            --primary: #2ecc71;
-            --secondary: #3498db;
-            --text: #ffffff;
-            --text-dim: #94a3b8;
+            --bg-color: #f1f5f9;
+            --text-color: #0f172a;
+            --glass-bg: #ffffff;
+            --input-bg: #ffffff;
+            --border-color: #e2e8f0;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
+        .dark {
+            --bg-color: #020617;
+            --text-color: #ffffff;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --input-bg: #0f172a;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
 
-        .container { width: 100%; max-width: 480px; padding: 15px; box-sizing: border-box; }
-
-        /* Navigation Tabs */
-        .nav-tabs {
-            display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 5px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        
+        .glass { 
+            background: var(--glass-bg); 
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(8px);
         }
 
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: none;
-            color: var(--text-dim);
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 10px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
+        .tab-btn.active { 
+            background: #10b981; 
+            color: white !important; 
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); 
         }
 
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
+        .solat-btn.active-jemaah { background-color: #10b981 !important; color: white !important; opacity: 1 !important; }
+        .solat-btn.active-sendiri { background-color: #3b82f6 !important; color: white !important; opacity: 1 !important; }
+        
+        input, textarea, select {
+            background-color: var(--input-bg) !important;
+            color: var(--text-color) !important;
+            border: 1px solid var(--border-color) !important;
         }
 
-        /* Card & UI */
-        .card {
-            background: var(--card);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        .dynamic-text { color: var(--text-color) !important; }
+
+        .card-grad {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        /* Form Elements */
-        input[type="text"], input[type="date"] {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #1f2937;
-            background: #050a10;
-            color: white;
-            margin-bottom: 15px;
-        }
-
-        .grid-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .check-item {
-            background: #1f2937;
-            padding: 12px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-        }
-
-        .check-item input { margin-right: 10px; accent-color: var(--primary); }
-
-        .btn-main {
-            background: var(--primary);
-            color: white;
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            border: none;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-        }
-
-        /* Sections Visibility */
-        #page-install, #page-login, #app-content { display: none; width: 100%; }
-        .visible { display: block !important; }
-
-        .header-title { text-align: left; margin-bottom: 20px; }
-        .header-title h1 { margin: 0; font-size: 24px; color: var(--primary); }
-        .header-title p { margin: 0; opacity: 0.6; font-size: 14px; }
+        /* Skrin Logic Style */
+        .page-node { display: none; }
+        .page-node.active { display: block; }
     </style>
 </head>
-<body>
+<body class="min-h-screen dark">
 
-    <div class="container">
+    <button onclick="toggleTheme()" class="fixed top-4 right-4 z-[110] w-10 h-10 rounded-full glass flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+        <span class="dark:hidden">🌙</span><span class="hidden dark:block">☀️</span>
+    </button>
+
+    <div id="page-install" class="page-node min-h-screen flex items-center justify-center p-6">
+        <div class="glass p-8 rounded-[2.5rem] max-w-sm w-full text-center space-y-6 shadow-2xl">
+            <div class="text-6xl">📲</div>
+            <h1 class="text-2xl font-800 tracking-tight dynamic-text">Pasang Aplikasi</h1>
+            <p class="text-sm opacity-70 dynamic-text">Sila pasang aplikasi ke skrin utama anda untuk akses pantas dan paparan skrin penuh.</p>
+            <button id="btnInstallPWA" class="w-full card-grad py-4 rounded-2xl text-white font-black uppercase tracking-widest shadow-lg">Pasang Sekarang</button>
+            <button onclick="navTo('page-login')" class="text-xs font-bold text-emerald-500 uppercase tracking-widest hover:underline">Langkau ke Pendaftaran</button>
+        </div>
+    </div>
+
+    <div id="page-login" class="page-node min-h-screen flex items-center justify-center p-6">
+        <div class="glass p-8 rounded-[2.5rem] max-w-sm w-full text-center space-y-6 shadow-2xl">
+            <div class="text-4xl text-emerald-500 font-black">📝</div>
+            <h1 class="text-2xl font-800 tracking-tight dynamic-text">Pendaftaran</h1>
+            <p class="text-sm opacity-70 dynamic-text">Masukkan nama anda untuk mula merekod amalan Ramadan.</p>
+            <input type="text" id="userNameInput" placeholder="Nama anda..." class="w-full rounded-xl px-4 py-4 font-bold outline-none text-center">
+            <button onclick="saveUserAndStart()" class="w-full card-grad py-4 rounded-2xl text-white font-black uppercase tracking-widest shadow-lg">Mula Beramal</button>
+        </div>
+    </div>
+
+    <div id="page-app" class="page-node max-w-5xl mx-auto min-h-screen relative shadow-2xl">
         
-        <div id="page-install" class="card" style="text-align: center;">
-            <div style="font-size: 50px;">📲</div>
-            <h2>Pasang Aplikasi</h2>
-            <p style="color: var(--text-dim);">Pasang aplikasi ke skrin utama untuk pengalaman skrin penuh tanpa bar URL.</p>
-            <button class="btn-main" id="btnInstall" style="background: var(--secondary);">PASANG SEKARANG</button>
-            <p onclick="showLogin()" style="cursor:pointer; text-decoration: underline; margin-top: 15px; font-size: 13px;">Langkau & Terus Daftar</p>
+        <nav class="flex p-2 gap-2 glass sticky top-0 z-[100]">
+            <button onclick="switchTab('amal')" id="tab-amal" class="tab-btn active flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">📝 Rekod</button>
+            <button onclick="switchTab('dash')" id="tab-dash" class="tab-btn flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all opacity-70">📊 Analisis</button>
+            <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all opacity-70">⚙️ Tetapan</button>
+        </nav>
+
+        <main class="p-4 sm:p-8 pb-32">
+            <div id="content-amal" class="space-y-8">
+                <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-emerald-500/20 pb-6">
+                    <div>
+                        <h2 class="text-3xl font-800 tracking-tight dynamic-text">Ramadan 1447H</h2>
+                        <p class="text-xs text-emerald-500 font-bold uppercase tracking-widest">👤 <span id="displayUserName">Pengguna</span></p>
+                    </div>
+                    <div class="flex items-center gap-4 bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20">
+                        <div class="text-right">
+                            <p class="text-[9px] opacity-70 font-black uppercase dynamic-text">Mata Terkumpul</p>
+                            <p id="grandTotal" class="text-xl font-900 text-emerald-500">0</p>
+                        </div>
+                        <span class="text-2xl">💎</span>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="glass p-5 rounded-3xl">
+                            <label class="text-[10px] font-black opacity-70 uppercase tracking-widest mb-2 block dynamic-text">Tarikh</label>
+                            <input type="date" id="datePicker" class="w-full rounded-xl px-4 py-3 font-bold outline-none">
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-black uppercase tracking-widest flex items-center gap-2 dynamic-text">
+                                <span class="w-2 h-5 bg-emerald-500 rounded-full"></span> Solat Fardhu
+                            </h3>
+                            <div id="solatList" class="space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="glass p-6 rounded-3xl">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xs font-black uppercase tracking-widest dynamic-text">✨ Amalan Sunnah & Manual</h3>
+                                <span class="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">Klik untuk Tandakan</span>
+                            </div>
+                            <div id="amalanGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                        </div>
+                        <div class="glass p-6 rounded-3xl">
+                            <h3 class="text-xs font-black uppercase tracking-widest mb-4 dynamic-text">📖 Al-Quran & Nota</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <input type="text" id="quranNote" placeholder="Muka Surat (Cth: 1-10)" oninput="updateData()" class="rounded-xl px-4 py-3 text-sm outline-none">
+                                <textarea id="dailyNote" placeholder="Nota Tadabbur" oninput="updateData()" class="rounded-xl px-4 py-3 text-sm outline-none" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-dash" class="hidden space-y-8">
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass p-6 rounded-3xl text-center">
+                        <p class="text-[10px] font-black opacity-60 uppercase dynamic-text">Purata Harian</p>
+                        <p id="stat-avg" class="text-3xl font-900 text-emerald-500">0</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl text-center">
+                        <p class="text-[10px] font-black opacity-60 uppercase dynamic-text">Minggu Ini</p>
+                        <p id="stat-week" class="text-3xl font-900 text-blue-500">0</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl text-center">
+                        <p class="text-[10px] font-black opacity-60 uppercase dynamic-text">Bulan Ini</p>
+                        <p id="stat-month" class="text-3xl font-900 text-purple-500">0</p>
+                    </div>
+                </section>
+                <div class="glass p-6 rounded-3xl overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="opacity-50 border-b border-emerald-500/10">
+                                <th class="py-3 dynamic-text">Tarikh</th>
+                                <th class="py-3 text-center dynamic-text">Solat (J/S)</th>
+                                <th class="py-3 text-center dynamic-text">Sunnah</th>
+                                <th class="py-3 text-right dynamic-text">Mata 💎</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="content-settings" class="hidden space-y-8">
+                <div class="glass p-6 rounded-3xl max-w-2xl">
+                    <h3 class="text-sm font-black uppercase tracking-widest mb-6 dynamic-text">➕ Tambah Amalan Manual</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <input type="text" id="customName" placeholder="Nama Amalan" class="rounded-xl px-4 py-3 text-sm outline-none">
+                        <input type="number" id="customPoints" placeholder="Mata" class="rounded-xl px-4 py-3 text-sm outline-none">
+                    </div>
+                    <button onclick="addCustomAmal()" class="w-full card-grad py-4 rounded-xl text-white font-black uppercase text-xs tracking-widest">Daftar Amalan</button>
+                    <button onclick="logoutUser()" class="w-full mt-4 bg-red-500/10 text-red-500 py-3 rounded-xl text-xs font-black uppercase tracking-widest border border-red-500/20">Log Keluar</button>
+                </div>
+            </div>
+
+            <footer class="mt-20 pt-12 border-t border-emerald-500/20 text-center space-y-8 pb-12">
+                <p class="text-lg font-800 dynamic-text">Unit Komunikasi Korporat PAS Sarawak</p>
+            </footer>
+        </main>
+
+        <div id="footer-save" class="fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
+            <div class="max-w-5xl mx-auto pointer-events-auto">
+                <button onclick="performSave()" class="w-full card-grad py-5 rounded-2xl text-white font-900 shadow-2xl transition-all active:scale-95 text-sm uppercase tracking-[0.2em]">
+                    Simpan Amalan Digital
+                </button>
+            </div>
         </div>
-
-        <div id="page-login" class="card">
-            <h2>Daftar Masuk</h2>
-            <p style="color: var(--text-dim); font-size: 14px;">Sila masukkan nama untuk mula merekod amalan.</p>
-            <input type="text" id="input-nama" placeholder="Contoh: Hamdan Sani">
-            <button class="btn-main" onclick="saveLogin()">Masuk Aplikasi</button>
-        </div>
-
-        <div id="app-content">
-            <div class="header-title">
-                <h1>Ramadan 1447H</h1>
-                <p>DIGITAL MUTABAAH SYSTEM</p>
-            </div>
-
-            <div class="nav-tabs">
-                <button class="tab-btn active">📝 REKOD</button>
-                <button class="tab-btn">📊 ANALISIS</button>
-                <button class="tab-btn" onclick="logout()">⚙️ TETAPAN</button>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <span style="font-size: 11px; color: var(--text-dim);">PENGGUNA</span><br>
-                    <strong id="user-display" style="color: var(--secondary);"></strong>
-                </div>
-                <div class="stat-box">
-                    <span style="font-size: 11px; color: var(--text-dim);">MATA TERKUMPUL</span><br>
-                    <strong style="color: #f1c40f;">💎 150</strong>
-                </div>
-            </div>
-
-            <div class="card">
-                <label style="font-size: 12px; color: var(--text-dim);">TARIKH:</label>
-                <input type="date" id="date-picker">
-
-                <h4 style="margin: 10px 0; font-size: 14px; color: var(--primary); border-left: 3px solid var(--primary); padding-left: 8px;">SOLAT FARDHU</h4>
-                <div class="grid-options">
-                    <div class="check-item"><input type="checkbox"> Subuh</div>
-                    <div class="check-item"><input type="checkbox"> Zuhur</div>
-                    <div class="check-item"><input type="checkbox"> Asar</div>
-                    <div class="check-item"><input type="checkbox"> Maghrib</div>
-                    <div class="check-item"><input type="checkbox"> Isyak</div>
-                </div>
-
-                <h4 style="margin: 10px 0; font-size: 14px; color: var(--secondary); border-left: 3px solid var(--secondary); padding-left: 8px;">AMALAN SUNAT</h4>
-                <div class="grid-options">
-                    <div class="check-item"><input type="checkbox"> Tarawih</div>
-                    <div class="check-item"><input type="checkbox"> Tadarus</div>
-                    <div class="check-item"><input type="checkbox"> Sedekah</div>
-                    <div class="check-item"><input type="checkbox"> Dhuha</div>
-                </div>
-
-                <button class="btn-main" onclick="saveAmalan()">SIMPAN AMALAN DIGITAL</button>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        // Logik Paparan
-        function showInstall() { hideAll(); document.getElementById('page-install').classList.add('visible'); }
-        function showLogin() { hideAll(); document.getElementById('page-login').classList.add('visible'); }
-        function showApp(nama) { 
-            hideAll(); 
-            document.getElementById('app-content').classList.add('visible'); 
-            document.getElementById('user-display').innerText = nama;
-            document.getElementById('date-picker').valueAsDate = new Date();
-        }
-        function hideAll() {
-            document.getElementById('page-install').classList.remove('visible');
-            document.getElementById('page-login').classList.remove('visible');
-            document.getElementById('app-content').classList.remove('visible');
+        // LOGIK SKRIN (INSTALL -> LOGIN -> APP)
+        function navTo(id) {
+            document.querySelectorAll('.page-node').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        // Logik User
-        function saveLogin() {
-            const nama = document.getElementById('input-nama').value;
-            if(!nama) return alert("Sila masukkan nama!");
-            localStorage.setItem('mutabaah_user', nama);
-            showApp(nama);
+        function saveUserAndStart() {
+            const name = document.getElementById('userNameInput').value;
+            if(!name) return alert("Sila masukkan nama anda!");
+            localStorage.setItem('mutabaah_v4_user', name);
+            document.getElementById('displayUserName').innerText = name;
+            navTo('page-app');
         }
 
-        function logout() {
-            if(confirm("Log keluar? Data sesi akan dipadam.")) {
-                localStorage.removeItem('mutabaah_user');
+        function logoutUser() {
+            if(confirm("Log keluar? Data rekod tetap disimpan.")) {
+                localStorage.removeItem('mutabaah_v4_user');
                 location.reload();
             }
         }
 
-        function saveAmalan() {
-            alert("Amalan berjaya direkodkan!");
+        // --- KOD ASAL MUTABAAH ANDA ---
+        const SOLATS = ["Subuh", "Zohor", "Asar", "Maghrib", "Isyak"];
+        const DEFAULT_SUNNAH = [
+            { id: 'tarawih', name: 'Tarawih', pts: 10, icon: '🌙' },
+            { id: 'tahajjud', name: 'Tahajjud', pts: 15, icon: '✨' },
+            { id: 'dhuha', name: 'Dhuha', pts: 10, icon: '☀️' },
+            { id: 'sedekah', name: 'Sedekah', pts: 10, icon: '💰' },
+            { id: 'witir', name: 'Witir', pts: 5, icon: '🌟' },
+            { id: 'zikir', name: 'Zikir Pagi/Petang', pts: 5, icon: '📿' }
+        ];
+
+        let state = {
+            selectedDate: new Date().toLocaleDateString('en-CA'),
+            records: JSON.parse(localStorage.getItem('mutabaah_v4_data')) || {},
+            customAmalan: JSON.parse(localStorage.getItem('mutabaah_v4_custom')) || DEFAULT_SUNNAH
+        };
+
+        function toggleTheme() { 
+            const isDark = document.body.classList.toggle('dark');
+            localStorage.setItem('theme_v4', isDark ? 'dark' : 'light');
         }
 
-        // Logik PWA
+        function init() {
+            // Check User Session
+            const savedUser = localStorage.getItem('mutabaah_v4_user');
+            if(savedUser) {
+                document.getElementById('displayUserName').innerText = savedUser;
+                navTo('page-app');
+            } else {
+                navTo('page-login');
+            }
+
+            const dp = document.getElementById('datePicker');
+            dp.value = state.selectedDate;
+            dp.onchange = (e) => { state.selectedDate = e.target.value; render(); };
+            render();
+        }
+
+        function render() {
+            const date = state.selectedDate;
+            if (!state.records[date]) {
+                state.records[date] = { solat: {}, sunnah: [], quran: '', note: '', pts: 0 };
+            }
+            const data = state.records[date];
+
+            document.getElementById('solatList').innerHTML = SOLATS.map(s => {
+                const val = data.solat[s] || 'none';
+                return `
+                <div class="glass p-3 rounded-2xl flex items-center justify-between">
+                    <span class="text-[10px] font-black uppercase dynamic-text">${s}</span>
+                    <div class="flex gap-1">
+                        <button onclick="toggleSolat('${s}', 'jemaah')" class="solat-btn px-3 py-2 rounded-lg border border-emerald-500/10 text-[8px] font-bold uppercase ${val === 'jemaah' ? 'active-jemaah' : 'opacity-40 dynamic-text'}">Jemaah</button>
+                        <button onclick="toggleSolat('${s}', 'sendiri')" class="solat-btn px-3 py-2 rounded-lg border border-blue-500/10 text-[8px] font-bold uppercase ${val === 'sendiri' ? 'active-sendiri' : 'opacity-40 dynamic-text'}">Sendiri</button>
+                    </div>
+                </div>`;
+            }).join('');
+
+            document.getElementById('amalanGrid').innerHTML = state.customAmalan.map(a => {
+                const active = data.sunnah.includes(a.id);
+                return `
+                <button onclick="toggleAmalan('${a.id}')" class="p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 ${active ? 'bg-emerald-500 border-emerald-500 text-white' : 'glass opacity-60 border-transparent dynamic-text'}">
+                    <span class="text-xl">${a.icon || '📌'}</span>
+                    <span class="text-[8px] font-black uppercase text-center">${a.name}</span>
+                </button>`;
+            }).join('');
+
+            calculatePoints(date);
+            updateDashboard();
+        }
+
+        function toggleSolat(name, value) {
+            const current = state.records[state.selectedDate].solat[name];
+            state.records[state.selectedDate].solat[name] = (current === value) ? 'none' : value;
+            render();
+        }
+
+        function toggleAmalan(id) {
+            const list = state.records[state.selectedDate].sunnah;
+            state.records[state.selectedDate].sunnah = list.includes(id) ? list.filter(x => x !== id) : [...list, id];
+            render();
+        }
+
+        function calculatePoints(date) {
+            const d = state.records[date];
+            let pts = 0;
+            SOLATS.forEach(s => {
+                if (d.solat[s] === 'jemaah') pts += 27;
+                else if (d.solat[s] === 'sendiri') pts += 1;
+            });
+            d.sunnah.forEach(sid => {
+                const found = state.customAmalan.find(a => a.id === sid);
+                if (found) pts += found.pts;
+            });
+            d.pts = pts;
+            save();
+        }
+
+        function save() {
+            localStorage.setItem('mutabaah_v4_data', JSON.stringify(state.records));
+            const total = Object.values(state.records).reduce((sum, r) => sum + (r.pts || 0), 0);
+            document.getElementById('grandTotal').innerText = total.toLocaleString();
+        }
+
+        function performSave() {
+            const b = document.querySelector('#footer-save button');
+            const original = b.innerText;
+            b.innerText = "BERJAYA DISIMPAN! ✨";
+            setTimeout(() => b.innerText = original, 2000);
+        }
+
+        function updateDashboard() {
+            const dates = Object.keys(state.records).sort().reverse();
+            const tbody = document.getElementById('dashTableBody');
+            tbody.innerHTML = dates.slice(0, 10).map(d => {
+                const r = state.records[d];
+                return `<tr class="border-b border-emerald-500/5"><td class="py-4 dynamic-text">${d}</td><td class="text-right font-black text-emerald-500">${r.pts}</td></tr>`;
+            }).join('');
+        }
+
+        function switchTab(t) {
+            ['amal', 'dash', 'settings'].forEach(id => {
+                document.getElementById('content-' + id).classList.add('hidden');
+                document.getElementById('tab-' + id).classList.remove('active');
+            });
+            document.getElementById('content-' + t).classList.remove('hidden');
+            document.getElementById('tab-' + t).classList.add('active');
+            document.getElementById('footer-save').classList.toggle('hidden', t !== 'amal');
+        }
+
+        // LOGIK PWA PROMPT
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if(!localStorage.getItem('mutabaah_user')) showInstall();
+            const user = localStorage.getItem('mutabaah_v4_user');
+            if(!user) navTo('page-install');
         });
 
-        document.getElementById('btnInstall').addEventListener('click', async () => {
+        document.getElementById('btnInstallPWA').addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') showLogin();
+                if (outcome === 'accepted') navTo('page-login');
+                deferredPrompt = null;
             }
         });
-
-        // Check Sesi
-        window.onload = () => {
-            const user = localStorage.getItem('mutabaah_user');
-            if(user) showApp(user);
-            else showLogin();
-        };
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
+
+        init();
     </script>
 </body>
 </html>
