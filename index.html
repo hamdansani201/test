@@ -6,58 +6,86 @@
     <title>Digital Mutabaah System</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d1117; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
-        .container { width: 90%; max-width: 400px; text-align: center; }
+        :root { --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --primary: #2ecc71; --blue: #3498db; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; }
         
-        /* Gaya Butang & Input */
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #30363d; background: #161b22; color: white; box-sizing: border-box; }
-        
-        /* Warna Tema */
-        .btn-install { background-color: #3498db; color: white; }
-        .btn-daftar { background-color: #2ecc71; color: white; }
-        .btn-utama { background-color: #238636; color: white; }
-
-        /* Sembunyi Skrin */
-        #page-1, #page-2, #page-3 { display: none; width: 100%; }
-        
-        /* Skrin Aktif */
+        /* Skrin Management */
+        #page-1, #page-2, #page-3 { display: none; width: 100%; animation: fadeIn 0.5s; }
         .active { display: block !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* UI Elements */
+        .card { background: var(--card); border: 1px solid #30363d; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        button { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; transition: 0.3s; }
+        input[type="text"], input[type="date"] { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; margin-bottom: 15px; }
+        
+        /* Mutabaah Specific */
+        .grid-solat { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-bottom: 20px; }
+        .checkbox-item { background: #0d1117; padding: 10px; border-radius: 8px; border: 1px solid #30363d; display: flex; align-items: center; }
+        .checkbox-item input { margin-right: 10px; transform: scale(1.2); }
+        .stats { background: #0d1117; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
 
     <div class="container">
         
-        <div id="page-1">
-            <img src="logo.png" alt="App Logo" style="width: 100px; margin-bottom: 20px;">
-            <h1>Selamat Datang</h1>
-            <p>Sila pasang aplikasi ke skrin utama anda untuk mula menggunakan sistem ini.</p>
-            <button id="btnInstall" class="btn-install">📲 PASANG APLIKASI SEKARANG</button>
-            <p style="font-size: 12px; color: #8b949e; margin-top: 20px;">Atau buka terus di browser jika sudah dipasang.</p>
-            <button onclick="navigasiKeDaftar()" style="background:none; color: #58a6ff; text-decoration: underline;">Terus ke Pendaftaran</button>
+        <div id="page-1" class="card">
+            <h1 style="color: var(--blue);">📲 Langkah 1</h1>
+            <p>Pasang aplikasi ke telefon anda untuk hilangkan bar alamat browser dan nampak lebih kemas.</p>
+            <button id="btnInstall" style="background: var(--blue); color: white;">PASANG APLIKASI</button>
+            <button onclick="tukarSkrin('page-2')" style="background: none; color: var(--text); font-size: 14px; text-decoration: underline;">Nanti dulu, teruskan ke Daftar</button>
         </div>
 
-        <div id="page-2">
-            <h2>Pendaftaran Pengguna</h2>
-            <p>Masukkan nama anda untuk mula merekod amalan.</p>
-            <input type="text" id="input-nama" placeholder="Taip nama anda di sini...">
-            <button onclick="prosesDaftar()" class="btn-daftar">DAFTAR & MASUK</button>
+        <div id="page-2" class="card">
+            <h1 style="color: var(--primary);">📝 Langkah 2</h1>
+            <p>Masukkan nama anda untuk mula merekod Mutabaah Ramadan 1447H.</p>
+            <input type="text" id="input-nama" placeholder="Contoh: Hamdan Sani">
+            <button onclick="prosesDaftar()" style="background: var(--primary); color: white;">MULA REKOD AMALAN</button>
         </div>
 
         <div id="page-3">
-            <div style="background: #161b22; padding: 20px; border-radius: 15px; border: 1px solid #30363d;">
-                <h3>Ramadan 1447H</h3>
-                <p>Digital Mutabaah System</p>
-                <hr style="border: 0.5px solid #30363d;">
-                <p>👤 Nama: <strong id="papar-nama"></strong></p>
+            <div class="card">
+                <h2 style="margin:0; color: var(--primary);">Ramadan 1447H</h2>
+                <p style="margin: 5px 0 20px 0; font-size: 14px; opacity: 0.7;">Digital Mutabaah System</p>
                 
-                <div style="background: #0d1117; padding: 15px; border-radius: 10px; margin-top: 20px;">
-                    <p>Mata Terkumpul: 💎 0</p>
-                    <button class="btn-utama">SIMPAN AMALAN DIGITAL</button>
+                <div class="stats">
+                    <div>
+                        <span style="font-size: 12px; opacity: 0.7;">👤 Pengguna</span><br>
+                        <strong id="papar-nama" style="color: var(--blue);"></strong>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 12px; opacity: 0.7;">💎 Mata</span><br>
+                        <strong style="color: #f1c40f;">150</strong>
+                    </div>
                 </div>
+
+                <div style="text-align: left;">
+                    <label style="font-size: 14px;">📅 Pilih Tarikh:</label>
+                    <input type="date" id="tarikh-amalan">
+
+                    <h4 style="border-left: 4px solid var(--primary); padding-left: 10px; margin: 20px 0 10px 0;">SOLAT FARDHU</h4>
+                    <div class="grid-solat">
+                        <div class="checkbox-item"><input type="checkbox"> Subuh</div>
+                        <div class="checkbox-item"><input type="checkbox"> Zuhur</div>
+                        <div class="checkbox-item"><input type="checkbox"> Asar</div>
+                        <div class="checkbox-item"><input type="checkbox"> Maghrib</div>
+                        <div class="checkbox-item"><input type="checkbox"> Isyak</div>
+                    </div>
+
+                    <h4 style="border-left: 4px solid var(--blue); padding-left: 10px; margin: 20px 0 10px 0;">AMALAN SUNAT</h4>
+                    <div class="grid-solat">
+                        <div class="checkbox-item"><input type="checkbox"> Tarawih</div>
+                        <div class="checkbox-item"><input type="checkbox"> Tadarus</div>
+                        <div class="checkbox-item"><input type="checkbox"> Sedekah</div>
+                        <div class="checkbox-item"><input type="checkbox"> Dhuha</div>
+                    </div>
+                </div>
+
+                <button style="background: var(--primary); color: white; margin-top: 20px;" onclick="alert('Rekod Berjaya Disimpan!')">SIMPAN AMALAN</button>
                 
-                <button onclick="logKeluar()" style="background:none; color: #f85149; font-size: 12px; margin-top: 30px;">Log Keluar / Tukar Nama</button>
+                <button onclick="logKeluar()" style="background:none; color: #f85149; font-size: 12px; margin-top: 20px;">Log Keluar / Tukar Nama</button>
             </div>
         </div>
 
@@ -65,10 +93,6 @@
 
     <script>
         // --- LOGIK NAVIGASI ---
-        function navigasiKeDaftar() {
-            tukarSkrin('page-2');
-        }
-
         function tukarSkrin(pageId) {
             document.getElementById('page-1').classList.remove('active');
             document.getElementById('page-2').classList.remove('active');
@@ -79,10 +103,7 @@
         // --- LOGIK DAFTAR ---
         function prosesDaftar() {
             const nama = document.getElementById('input-nama').value;
-            if (nama === "") {
-                alert("Sila masukkan nama!");
-                return;
-            }
+            if (nama === "") { alert("Sila masukkan nama!"); return; }
             localStorage.setItem('user_nama', nama);
             bukaAplikasi(nama);
         }
@@ -90,45 +111,43 @@
         function bukaAplikasi(nama) {
             document.getElementById('papar-nama').innerText = nama;
             tukarSkrin('page-3');
+            // Set tarikh harini automatik
+            document.getElementById('tarikh-amalan').valueAsDate = new Date();
         }
 
         function logKeluar() {
-            localStorage.removeItem('user_nama');
-            location.reload();
+            if(confirm("Adakah anda mahu log keluar?")) {
+                localStorage.removeItem('user_nama');
+                location.reload();
+            }
         }
 
         // --- LOGIK PWA (INSTALL) ---
         let deferredPrompt;
-        const btnInstall = document.getElementById('btnInstall');
-
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            tukarSkrin('page-1'); // Tunjukkan Page 1 jika belum install
+            tukarSkrin('page-1');
         });
 
-        btnInstall.addEventListener('click', (e) => {
+        document.getElementById('btnInstall').addEventListener('click', (e) => {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    navigasiKeDaftar();
-                }
+                if (choiceResult.outcome === 'accepted') { tukarSkrin('page-2'); }
                 deferredPrompt = null;
             });
         });
 
-        // --- CHECK STATUS USER SEMASA LOAD ---
+        // --- CHECK STATUS ON LOAD ---
         window.onload = function() {
             const namaLama = localStorage.getItem('user_nama');
             if (namaLama) {
                 bukaAplikasi(namaLama);
             } else {
-                // Jika belum daftar, tunjuk Page 1 (Install)
-                tukarSkrin('page-1');
+                tukarSkrin('page-2'); // Terus ke daftar jika PWA tak dpt dikesan
             }
         };
 
-        // Daftar Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
