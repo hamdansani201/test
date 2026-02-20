@@ -8,6 +8,37 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script>
+function prosesDaftar() {
+    const nama = document.getElementById('input-nama').value;
+
+    if (nama === "") {
+        alert("Sila masukkan nama anda dahulu!");
+        return;
+    }
+
+    // 1. Simpan nama dalam "Memory" Browser (Local Storage)
+    // Supaya bila user buka esok, dia tak payah daftar lagi
+    localStorage.setItem('user_nama', nama);
+
+    // 2. Jalankan fungsi untuk masuk ke aplikasi
+    bukaAplikasi(nama);
+}
+
+function bukaAplikasi(nama) {
+    document.getElementById('nama-pembeli').innerText = nama;
+    document.getElementById('skrin-daftar').style.display = 'none';
+    document.getElementById('skrin-utama').style.display = 'block';
+}
+
+// 3. Automatik: Check kalau user dah pernah daftar sebelum ni
+window.onload = function() {
+    const userLama = localStorage.getItem('user_nama');
+    if (userLama) {
+        bukaAplikasi(userLama);
+    }
+};
+
+        
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -76,6 +107,22 @@
 </head>
 <body class="min-h-screen dark">
 
+    <div id="skrin-daftar" style="text-align: center; padding: 50px;">
+    <h2>Daftar Masuk Kedai</h2>
+    <input type="text" id="input-nama" placeholder="Masukkan Nama Anda" style="padding: 10px; width: 80%;"><br><br>
+    <button onclick="prosesDaftar()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px;">
+        Masuk Aplikasi
+    </button>
+</div>
+
+<div id="skrin-utama" style="display: none;">
+    <div class="resit">
+        <h2>KEDAI KACANG</h2>
+        <p>Selamat Datang, <span id="nama-pembeli"></span>!</p>
+        </div>
+</div>
+
+
     <button id="btnInstall" style="display:none; background-color: #007bff; margin-top: 10px;">
     📲 Pasang Aplikasi Kedai
 </button>
@@ -84,6 +131,8 @@
     <button onclick="toggleTheme()" class="fixed top-4 right-4 z-[110] w-10 h-10 rounded-full glass flex items-center justify-center shadow-lg active:scale-90 transition-transform">
         <span class="dark:hidden">🌙</span><span class="hidden dark:block">☀️</span>
     </button>
+
+    
 
     <div class="max-w-5xl mx-auto min-h-screen relative shadow-2xl">
         
@@ -503,5 +552,6 @@ if ('serviceWorker' in navigator) {
     </script>
 </body>
 </html>
+
 
 
